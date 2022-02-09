@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.Init.Dvd
-import Mathlib.Init.Logic
-import Mathlib.Tactic.Basic
-
-notation "ℤ" => Int
-
-namespace Int
-
-instance : Dvd Int where
-  dvd a b := ∃ c, b = a * c
-=======
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -508,6 +496,5 @@ theorem sign_mul_natAbs : ∀ (a : ℤ), sign a * natAbs a = a
 | (n+1:ℕ) => Int.one_mul _
 | 0       => rfl
 | -[1+ n] => (Int.neg_eq_neg_one_mul _).symm
->>>>>>> 6c61d4cfbe289bf463d2bf018b5a065bc876af00
 
 end Int

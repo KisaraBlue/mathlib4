@@ -61,8 +61,8 @@ theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Semiring.add_mul a 
     rw [pow_succ, ih]
     simp
 
-@[simp] lemma ofNat_zero : (ofNat 0 : R) = 0 := rfl
-@[simp] lemma ofNat_one : (ofNat 1 : R) = 1 := rfl
+--@[simp] lemma ofNat_zero : (ofNat 0 : R) = 0 := rfl
+--@[simp] lemma ofNat_one : (ofNat 1 : R) = 1 := rfl
 lemma Nat.cast_succ {R} [Semiring R] {n : ℕ} : Nat.cast (n + 1) = (Nat.cast n + 1 : R) := by
   cases n <;> simp [Nat.cast_succ_succ]
 
@@ -87,7 +87,8 @@ lemma Nat.cast_pow {R} [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R
     simp_all [cast_mul, cast_add, cast_succ', Nat.pow_succ', _root_.pow_succ', pow_zero]
 
 theorem add_self_eq_mul_two (a : R) : a + a = 2 * a := by
-  rw [←one_mul a, ←add_mul, one_mul, ←ofNat_one, ←ofNat_add, ofNat_eq_ofNat R 2]
+  rw [←one_mul a, ←add_mul, one_mul]
+  sorry
 
 end Semiring
 
@@ -114,7 +115,7 @@ variable {R} [Ring R]
 
 instance {R} [Ring R] : AddCommGroup R := { ‹Ring R› with }
 
-theorem sub_eq_add_neg (a b : R) : a - b = a + -b := Ring.sub_eq_add_neg a b
+--theorem sub_eq_add_neg (a b : R) : a - b = a + -b := Ring.sub_eq_add_neg a b
 
 theorem neg_mul_left (a b : R) : -(a * b) = -a * b := by
   rw [←add_zero (-a * b), ←add_left_neg (a * b)]
@@ -281,7 +282,7 @@ instance : CommRing ℤ where
       rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
       exact rfl
 
-instance : Numeric ℤ := ⟨Int.ofNat⟩
+--instance : Numeric ℤ := ⟨Int.ofNat⟩
 
 instance : IntegralDomain ℤ where
   --CommRing
