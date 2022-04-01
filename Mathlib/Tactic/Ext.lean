@@ -5,7 +5,7 @@ Author: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.Rcases
+import Mathlib.Tactic.RCases
 
 open Tactic
 
@@ -24,7 +24,7 @@ def withExtHyps (struct : Name) (k : Array Expr → (x y : Expr) → Array (Name
       let x_f ← mkProjection x field
       let y_f ← mkProjection y field
       if ← isProof x_f then
-        ()
+        pure ()
       else if ← isDefEq (← inferType x_f) (← inferType y_f) then
         hyps := hyps.push (field, ← mkEq x_f y_f)
       else
@@ -69,8 +69,8 @@ scoped macro "ext_iff_proof%" : term => `(fun {..} {..} =>
    fun _ => by (repeat cases ‹_ ∧ _›); subst_eqs; rfl⟩)
 
 scoped macro "declareExtTheoremsFor" struct:ident : command => do
-  let extName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
-  let extIffName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
+  let extName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
+  let extIffName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
   `(@[ext] protected theorem $extName:ident : ext_type% $struct:ident := ext_proof%
     protected theorem $extIffName:ident : ext_iff_type% $struct:ident := ext_iff_proof%)
 
@@ -85,10 +85,10 @@ def liftCommandElabM (k : CommandElabM α) : AttrM α := do
     traceState.traces := coreState.traceState.traces ++ commandState.traceState.traces
     env := commandState.env
   }
-  if let some err ← commandState.messages.msgs.toArray.find?
+  if let some err := commandState.messages.msgs.toArray.find?
       (·.severity matches MessageSeverity.error) then
     throwError err.data
-  a
+  pure a
 
 initialize extExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
@@ -111,7 +111,7 @@ def extAttribute : AttributeImpl where
         let ty := declTy.getArg! 0
         let key ←
           if (← withReducible <| whnf ty).isForall then
-            #[DiscrTree.Key.star] -- FIXME: workaround
+            pure #[DiscrTree.Key.star] -- FIXME: workaround
           else
             withReducible <| DiscrTree.mkPath ty
         extExtension.add (decl, key) kind
@@ -127,23 +127,41 @@ open Lean.Elab.Tactic in
 elab "apply_ext_lemma" : tactic => do
   let tgt ← getMainTarget
   unless tgt.isAppOfArity ``Eq 3 do
-    throwError "applyExtLemma only applies to equations"
+    throwError "applyExtLemma only applies to equations, not{indentExpr tgt}"
+  let ty := tgt.getArg! 0
   let s ← saveState
-  for lem in ← (← extLemmas (← getEnv)).getMatch (tgt.getArg! 0) do
+  for lem in ← (extLemmas (← getEnv)).getMatch ty do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return
     catch e =>
       s.restore
-  throwError "no applicable extensionality lemma found"
+  throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
-scoped syntax "ext_or_skip" (colGt term:max)* : tactic
+scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
 macro_rules | `(tactic| ext_or_skip) => `(tactic| skip)
-macro_rules | `(tactic| ext_or_skip $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
-macro_rules | `(tactic| ext_or_skip $x $xs*) => `(tactic| intro $x; ext_or_skip $xs*)
+macro_rules
+| `(tactic| ext_or_skip $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+macro_rules
+| `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
+  `(tactic| rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
--- TODO: We need to use the following, to support existing uses of `ext` in mathlib3.
--- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+-- TODO: support `ext : n`
 
-syntax "ext" (colGt term:max)* : tactic
-macro_rules | `(tactic| ext $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
+syntax "ext" (colGt ppSpace rintroPat)* (" : " num)? : tactic
+macro_rules
+| `(tactic| ext) => do
+  `(tactic| first | intro; ext | apply_ext_lemma; ext | skip)
+macro_rules
+| `(tactic| ext $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+
+syntax "ext1" (colGt ppSpace rintroPat)* : tactic
+macro_rules
+| `(tactic| ext1 $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; rintro $xs:rintroPat*)
+
+-- TODO
+syntax "ext1?" (colGt ppSpace rintroPat)* : tactic
+syntax "ext?" (colGt ppSpace rintroPat)* (" : " num)? : tactic

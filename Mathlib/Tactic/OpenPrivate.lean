@@ -13,8 +13,12 @@ namespace Lean
 def Meta.collectPrivateIn [Monad m] [MonadEnv m] [MonadError m]
   (n : Name) (set := NameSet.empty) : m NameSet := do
   let c ← getConstInfo n
-  pure $ Expr.foldConsts c.value! set fun c a =>
-    if isPrivateName c then a.insert c else a
+  let traverse value := Expr.foldConsts value set fun c a =>
+      if isPrivateName c then a.insert c else a
+  if let some value := c.value? then return traverse value
+  if let some c := (← getEnv).find? (n ++ `_cstage1) then
+    if let some value := c.value? then return traverse value
+  return traverse c.type
 
 def Environment.moduleIdxForModule? (env : Environment) (mod : Name) : Option ModuleIdx :=
   (env.allImportedModuleNames.indexOf? mod).map fun idx => idx.val
@@ -33,7 +37,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
     let n ← resolveGlobalConstNoOverload tgt
     names ← Meta.collectPrivateIn n names
   for mod in mods.getD #[] do
-    let some modIdx ← (← getEnv).moduleIdxForModule? mod.getId
+    let some modIdx := (← getEnv).moduleIdxForModule? mod.getId
       | throwError "unknown module {mod}"
     for declName in (← getEnv).declsInModuleIdx modIdx do
       if isPrivateName declName then
@@ -82,7 +86,7 @@ It is also possible to specify the module instead with
 -/
 @[commandElab openPrivate] def elabOpenPrivate : CommandElab
 | `(open private $ids* $[in $tgts*]? $[from $mods*]?) =>
-  elabOpenPrivateLike ids tgts mods fun c _ _ => c
+  elabOpenPrivateLike ids tgts mods fun c _ _ => pure c
 | _ => throwUnsupportedSyntax
 
 syntax (name := exportPrivate) "export private" ident* ("in" ident*)? ("from" ident*)? : command
@@ -114,7 +118,7 @@ It is also possible to specify the module instead with
     }
     addDecl decl
     compileDecl decl
-    name
+    pure name
 | _ => throwUnsupportedSyntax
 
 end Elab.Command
