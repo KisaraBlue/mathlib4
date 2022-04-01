@@ -88,7 +88,8 @@ lemma Nat.cast_pow {R} [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R
 
 theorem add_self_eq_mul_two (a : R) : a + a = 2 * a := by
   rw [←one_mul a, ←add_mul, one_mul]
-  sorry
+  rfl
+
 
 end Semiring
 
@@ -167,8 +168,11 @@ instance (R : Type u) [CommRing R] : CommSemiring R where
   __ := inferInstanceAs (Semiring R)
   __ := ‹CommRing R›
 
+theorem mul_self_eq_square (a : R) : a * a = a ^ 2 := by
+  rw [←pow_one a, ←pow_add, ←pow_mul, Nat.one_mul]
+
 theorem square_neg (a : R) : -a ^ 2 = a ^ 2 := by
-  rw [(show -a = -(1 * a) by simp), neg_mul_left, mul_pow _ a, square_neg_one, one_mul]
+  rw [←one_mul a, neg_mul_left, mul_pow _ a, square_neg_one, one_mul, one_mul]
 
 theorem evenpow_neg {n m : ℕ} (a : R) (h : n = 2 * m) : -a ^ n = a ^ n := by
   rw [h, pow_mul, pow_mul, square_neg]

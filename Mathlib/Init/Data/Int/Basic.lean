@@ -40,6 +40,15 @@ lemma ofNat_add (n m : ℕ) : ofNat (n + m) = ofNat n + ofNat m := rfl
 lemma ofNat_mul (n m : ℕ) : ofNat (n * m) = ofNat n * ofNat m := rfl
 lemma ofNat_succ (n : ℕ) : ofNat (succ n) = ofNat n + 1 := rfl
 
+theorem pow_succ (n : Int) (m : Nat) : n ^ (succ m) = n ^ m * n := rfl
+
+theorem pow_zero (n : Int) : n ^ (0 : Nat) = 1 := rfl
+
+lemma ofNat_pow (n m : ℕ) : ofNat (n ^ m) = ofNat n ^ m := by
+  induction m with
+  | zero      => rw [Nat.pow_zero]; rfl
+  | succ m ih => rw [Nat.pow_succ, ofNat_mul, ih, ←pow_succ]
+
 lemma neg_ofNat_zero : -(ofNat 0) = 0 := rfl
 lemma neg_ofNat_of_succ (n : ℕ) : -(ofNat (succ n)) = -[1+ n] := rfl
 lemma neg_neg_ofNat_succ (n : ℕ) : -(-[1+ n]) = ofNat (succ n) := rfl

@@ -1,3 +1,10 @@
+import Mathlib.Algebra.EllipticCurve.Kronecker
+import Mathlib.Algebra.EllipticCurve.Model
+import Mathlib.Algebra.EllipticCurve.OldInt
+import Mathlib.Algebra.EllipticCurve.OldTate copy
+import Mathlib.Algebra.EllipticCurve.OldTate
+import Mathlib.Algebra.EllipticCurve.TateInt
+import Mathlib.Algebra.EllipticCurve.ValuedRing
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -15,6 +22,7 @@ import Mathlib.Data.List.Card
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Enat
 import Mathlib.Data.Nat.Gcd
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
@@ -27,6 +35,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
