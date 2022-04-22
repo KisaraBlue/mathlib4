@@ -39,6 +39,9 @@ protected lemma neg_zero : -(0:ℤ) = 0 := rfl
 
 lemma ofNat_add (n m : ℕ) : ofNat (n + m) = ofNat n + ofNat m := rfl
 lemma ofNat_mul (n m : ℕ) : ofNat (n * m) = ofNat n * ofNat m := rfl
+
+lemma coe_nat_mul (n m : ℕ) : ↑(n * m) = ↑n * ↑m := rfl
+
 lemma ofNat_succ (n : ℕ) : ofNat (succ n) = ofNat n + 1 := rfl
 
 theorem pow_succ (n : Int) (m : Nat) : n ^ (succ m) = n ^ m * n := rfl
@@ -49,6 +52,11 @@ lemma ofNat_pow (n m : ℕ) : ofNat (n ^ m) = ofNat n ^ m := by
   induction m with
   | zero      => rw [Nat.pow_zero]; rfl
   | succ m ih => rw [Nat.pow_succ, ofNat_mul, ih, ←pow_succ]
+
+lemma coe_nat_pow (n m : ℕ) : ↑(n ^ m) = ↑n ^ m := by
+  induction m with
+  | zero      => rw [Nat.pow_zero]
+  | succ m ih => rw [Nat.pow_succ, coe_nat_mul, ih]
 
 lemma neg_ofNat_zero : -(ofNat 0) = 0 := rfl
 lemma neg_ofNat_of_succ (n : ℕ) : -(ofNat (succ n)) = -[1+ n] := rfl

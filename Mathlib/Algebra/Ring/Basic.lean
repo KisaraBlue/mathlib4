@@ -119,9 +119,6 @@ section CommRing
 variable {R} [CommRing R]
 
 
-theorem mul_self_eq_square (a : R) : a * a = a ^ 2 := by
-  rw [←pow_one a, ←pow_add, ←pow_mul, Nat.one_mul]
-
 theorem square_neg (a : R) : -a ^ 2 = a ^ 2 := by
   rw [←one_mul a, neg_mul_left, mul_pow _ a, square_neg_one, one_mul, one_mul]
 
