@@ -10,6 +10,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
@@ -179,17 +180,15 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
 /- E -/ syntax (name := trace) "trace " term : tactic
-/- E -/ syntax (name := existsi) "exists " term,* : tactic
+/- E -/ syntax (name := existsi) (priority := low) "exists " term,* : tactic
 /- E -/ syntax (name := eConstructor) "econstructor" : tactic
-/- E -/ syntax (name := left) "left" : tactic
-/- E -/ syntax (name := right) "right" : tactic
 /- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 /- M -/ syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
 /- N -/ syntax (name := simp') "simp'" "*"? (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace colGt (ident <|> "_"))* (&" only")? (" [" simpArg,* "]")? (" with " ident+)? : tactic
-/- N -/ syntax (name := dsimp) "dsimp" (config)? (&" only")?
+/- N -/ syntax (name := dsimp') "dsimp'" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
@@ -570,14 +569,6 @@ namespace Attr
 /- N -/ syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
-
-/- B -/ syntax (name := toAdditiveIgnoreArgs) "to_additive_ignore_args" num* : attr
-/- B -/ syntax (name := toAdditiveRelevantArg) "to_additive_relevant_arg" num : attr
-/- B -/ syntax (name := toAdditiveReorder) "to_additive_reorder" num* : attr
-/- B -/ syntax (name := toAdditive) "to_additive" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive!) "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive?) "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive!?) "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 end Attr
 
