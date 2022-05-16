@@ -266,7 +266,7 @@ protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 --instance : Numeric ℤ := ⟨Int.ofNat⟩
 
 instance : IntegralDomain ℤ where
-  --CommRing
+  __ := inferInstanceAs (CommRing ℤ)
   non_trivial := by sorry
   factors_nzero_mul_nzero := by sorry
 
