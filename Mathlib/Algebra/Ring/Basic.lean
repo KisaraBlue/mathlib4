@@ -101,6 +101,9 @@ theorem neg_add (a b : R) : - (a + b) = -a + -b := by
     rw [add_right_neg b, zero_add, add_right_neg a, add_zero]
   rwa [add_left_neg (a + b), zero_add] at h₁
 
+theorem sub_add (a b c : R) : a - (b + c) = a - b - c := by
+  rw [sub_eq_add_neg, neg_add, ←add_assoc, ←sub_eq_add_neg, ←sub_eq_add_neg]
+
 theorem sub_add_comm (n m k : R) : n + m - k = n - k + m := by
   rw [sub_eq_add_neg, add_assoc, add_comm m, ←add_assoc, ←sub_eq_add_neg]
 

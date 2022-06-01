@@ -1,8 +1,5 @@
 import Mathlib.Algebra.EllipticCurve.Kronecker
 import Mathlib.Algebra.EllipticCurve.Model
-import Mathlib.Algebra.EllipticCurve.OldInt
-import Mathlib.Algebra.EllipticCurve.OldTate copy
-import Mathlib.Algebra.EllipticCurve.OldTate
 import Mathlib.Algebra.EllipticCurve.TateInt
 import Mathlib.Algebra.EllipticCurve.ValuedRing
 import Mathlib.Algebra.Group.Basic

@@ -44,21 +44,20 @@ def parsefunc (s : String) : Model ℤ × ℕ × Kodaira × ℕ × ℕ :=
 unsafe
 def test (N : ℕ) : IO Unit := do
   let l ← lines $ mkFilePath ["test/lmfdb.csv"]
-  let limit := min l.size N
+  let limit : ℕ := min l.size N
   for i in Array.range limit do
-    let str := l[i]
-    let d := parsefunc str
-    let m := d.fst
+    let str : String := l[i]
+    let d : Model ℤ × ℕ × Kodaira × ℕ × ℕ := parsefunc str
+    let m : Model ℤ := d.fst
     if Δnz : m.discr ≠ 0 then
-      let p := d.snd.fst; let res := d.snd.snd;
+      let p : ℕ := d.snd.fst; let res : Kodaira × ℕ × ℕ := d.snd.snd
       match Int.tate_algorithm p ⟨m, Δnz⟩ with
       | (k, f, c, _, _, _, _) =>
-        if (k, f, c) ≠ res then println str else ()
-        if i = limit / 2 then println "First half checked"
-        if i = limit - 1 then println "Second half checked"
+        if (k, f, c) ≠ res then println str else print ""
+        if i = limit - 1 then println "All lines tested"
     else
-      ();
+      print ""
   -- l.foldl (λ t h => do t; println h) (return ())
   -- parseFile <| FilePath.mk "board1.txt"
 
-#eval test 3000
+#eval test 30000
