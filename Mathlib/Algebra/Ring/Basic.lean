@@ -159,6 +159,15 @@ theorem mul_eq_zero_iff_factor_eq_zero (a b : R) : a * b = 0 ↔ a = 0 ∨ b = 0
     | inl a_zero => rw [a_zero, zero_mul]
     | inr b_zero => rw [b_zero, mul_zero]
 
+theorem nzero_mul_left_cancel (a b c : R) : a ≠ 0 → a * b = a * c → b = c := by
+  intro a_ne_z ab_eq_ac
+  rw [←add_left_inj (-(a * c)), add_neg_self (a * c), neg_mul_right, ←mul_add] at ab_eq_ac
+  cases (mul_eq_zero_iff_factor_eq_zero a (b + -c)).1 ab_eq_ac with
+  | inl h => exact False.elim (a_ne_z h)
+  | inr h =>
+    rw [←add_left_inj (-c), add_neg_self c]
+    exact h
+
 -- set_option pp.all true
 theorem pow_nonzero (a : R) (n : ℕ) : a ≠ 0 → a ^ n ≠ 0 := by
   intro h
@@ -167,7 +176,7 @@ theorem pow_nonzero (a : R) (n : ℕ) : a ≠ 0 → a ^ n ≠ 0 := by
     simp
     intro hh
     apply h
-    rw [← one_mul a, hh, zero_mul]
+    rw [←one_mul a, hh, zero_mul]
   | succ n ih =>
     rw [pow_succ]
     exact factors_nzero_mul_nzero ih h
