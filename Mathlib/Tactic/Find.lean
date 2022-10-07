@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Sebastian Ullrich
+Authors: Sebastian Ullrich
 -/
 import Lean
 import Mathlib.Tactic.Cache
@@ -49,7 +49,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName
   <||> isMatcher declName
 
-initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
+initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
   DeclCache.mk "#find: init cache" {} fun _ c headMap => do
     if (← isBlackListed c.name) then
       return headMap
@@ -95,7 +95,7 @@ There is also the `find` tactic which looks for
 lemmas which are `apply`able against the current goal.
 -/
 elab "#find" t:term : command =>
-  liftTermElabM none do
+  liftTermElabM do
     let t ← Term.elabTerm t none
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
     findType t

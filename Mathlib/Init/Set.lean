@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Mathlib.Init.SetNotation
+import Std.Classes.SetNotation
 
 /-!
 
@@ -45,6 +45,9 @@ s a
 instance : Membership α (Set α) :=
 ⟨Set.mem⟩
 
+theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
+funext (fun x => propext (h x))
+
 protected def subset (s₁ s₂ : Set α) :=
 ∀ {a}, a ∈ s₁ → a ∈ s₂
 
@@ -52,9 +55,9 @@ instance : Subset (Set α) :=
 ⟨Set.subset⟩
 
 instance : EmptyCollection (Set α) :=
-⟨λ a => false⟩
+⟨λ _ => False⟩
 
-open Mathlib.ExtendedBinder in
+open Std.ExtendedBinder in
 syntax "{ " extBinder " | " term " }" : term
 
 macro_rules
@@ -65,21 +68,25 @@ macro_rules
 
 @[appUnexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `(setOf fun $x:ident => $p) => `({ $x:ident | $p })
-  | `(setOf fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun $x:ident => $p) => `({ $x:ident | $p })
+  | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
-open Mathlib.ExtendedBinder in
+open Std.ExtendedBinder in
 macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
   `({ x | ∃ᵉ $bs:extBinders, $t = x })
 
-def univ : Set α := {a | True }
+def univ : Set α := {_a | True}
 
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
 
+instance : Insert α (Set α) := ⟨Set.insert⟩
+
 protected def singleton (a : α) : Set α :=
 {b | b = a}
+
+instance : Singleton α (Set α) := ⟨Set.singleton⟩
 
 protected def union (s₁ s₂ : Set α) : Set α :=
 {a | a ∈ s₁ ∨ a ∈ s₂}
@@ -119,26 +126,10 @@ instance : Functor Set :=
 { map := @Set.image }
 
 instance : LawfulFunctor Set where
-  id_map s := funext $ λ b => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
-  comp_map g h s := funext $ λ c => propext
+  id_map _ := funext fun _ => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := funext $ λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
-
-syntax "{" term,+ "}" : term
-
-macro_rules
-  | `({$x:term}) => `(Set.singleton $x)
-  | `({$x:term, $xs:term,*}) => `(Set.insert $x {$xs:term,*})
-
-@[appUnexpander Set.singleton]
-def singletonUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.singleton $a) => `({ $a })
-| _ => throw ()
-
-@[appUnexpander Set.insert]
-def insertUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
-| _ => throw ()
 
 end Set

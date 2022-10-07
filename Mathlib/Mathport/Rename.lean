@@ -9,7 +9,7 @@ namespace Mathlib.Prelude.Rename
 
 open Lean
 open System (FilePath)
-open Std (HashMap)
+open Lean (HashMap)
 
 abbrev RenameMap := HashMap Name Name
 
@@ -34,7 +34,7 @@ open Lean.Elab Lean.Elab.Command
 syntax (name := align) "#align " ident ident : command
 
 @[commandElab align] def elabAlign : CommandElab
-  | `(#align%$tk $id3:ident $id4:ident) =>
+  | `(#align $id3:ident $id4:ident) =>
     liftCoreM $ addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
 

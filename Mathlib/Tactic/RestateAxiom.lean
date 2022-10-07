@@ -46,16 +46,17 @@ elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
     match newName with
       | none =>
         match oldName with
-        | Name.str n s _  =>
+        | Name.str n s =>
           if s.back = ''' then
             Name.mkStr n $ s.extract 0 (s.endPos - ⟨1⟩)
           else
             Name.mkStr n $ s ++ "_lemma"
         | x => x
       | some n => Name.getPrefix oldName ++ n.getId
-  match ← getConstInfo oldName with
-  | ConstantInfo.defnInfo info =>
-    addAndCompile $  Declaration.defnDecl { info with name := newName }
-  | ConstantInfo.thmInfo info =>
-    addAndCompile $  Declaration.thmDecl { info with name := newName }
-  | x => throwError "Constant {oldName} is not a definition or theorem."
+  liftCoreM do
+    match ← getConstInfo oldName with
+    | ConstantInfo.defnInfo info =>
+      addAndCompile <| .defnDecl { info with name := newName }
+    | ConstantInfo.thmInfo info =>
+      addAndCompile <| .thmDecl { info with name := newName }
+    | _ => throwError "Constant {oldName} is not a definition or theorem."

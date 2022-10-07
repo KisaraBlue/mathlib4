@@ -1,5 +1,6 @@
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Zero
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
 
@@ -22,15 +23,6 @@ attribute [to_additive HMul] HPow
 # Typeclasses for monoids and groups etc
 -/
 
-class Zero.{u} (α : Type u) where
-  zero : α
-
-instance Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
-  ofNat := ‹Zero α›.1
-
-instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
-  zero := 0
-
 @[to_additive Zero]
 class One.{u} (α : Type u) where
   one : α
@@ -43,10 +35,13 @@ instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
 instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
   one := 1
 
+/-- Class of types that have an inversion operation. -/
 @[to_additive Neg]
 class Inv (α : Type u) where
+  /-- Invert an element of α. -/
   inv : α → α
 
+@[inheritDoc]
 postfix:max "⁻¹" => Inv.inv
 
 /-
@@ -63,7 +58,7 @@ variable {M : Type u}
 /-- The fundamental scalar multiplication in an additive monoid. `nsmul_rec n a = a+a+...+a` n
 times. Use instead `n • a`, which has better definitional behavior. -/
 def nsmul_rec [Zero M] [Add M] : ℕ → M → M
-| 0  , a => 0
+| 0  , _ => 0
 | n+1, a => a + nsmul_rec n a
 
 -- use `x * npow_rec n x` and not `npow_rec n x * x` in the definition to make sure that
@@ -71,7 +66,7 @@ def nsmul_rec [Zero M] [Add M] : ℕ → M → M
 /-- The fundamental power operation in a monoid. `npow_rec n a = a*a*...*a` n times.
 Use instead `a ^ n`,  which has better definitional behavior. -/
 def npow_rec [One M] [Mul M] : ℕ → M → M
-| 0  , a => 1
+| 0  , _ => 1
 | n+1, a => a * npow_rec n a
 
 attribute [to_additive_reorder 3] npow_rec
@@ -229,6 +224,7 @@ class Nat.AtLeastTwo (n : Nat) : Prop where
 instance : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
 
+@[nolint unusedArguments]
 instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 

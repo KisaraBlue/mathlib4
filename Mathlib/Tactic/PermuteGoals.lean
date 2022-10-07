@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Arthur Paulino, Mario Carneiro
+Authors: Arthur Paulino, Mario Carneiro
 -/
 
 import Lean
-import Mathlib.Data.List.Defs
+import Std.Data.List.Basic
+import Mathlib.Init.Data.Nat.Basic
 
 namespace Mathlib.Tactic
 
@@ -37,7 +38,7 @@ def splitGoalsAndGetNth (nth : ℕ) (reverse : Bool := false) :
 See also `Tactic.rotate_goals`, which moves goals from the front to the back and vice-versa.
 -/
 elab "pick_goal " reverse:"-"? n:num : tactic => do
-  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  let (g, gl, gr) ← splitGoalsAndGetNth n.1.toNat !reverse.isNone
   setGoals $ g :: (gl ++ gr)
 
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
@@ -54,7 +55,7 @@ The goal is not required to be solved and any resulting subgoals are inserted ba
 list of goals, replacing the chosen goal.
 -/
 elab "on_goal " reverse:"-"? n:num " => " seq:tacticSeq : tactic => do
-  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  let (g, gl, gr) ← splitGoalsAndGetNth n.1.toNat !reverse.isNone
   setGoals [g]
   evalTactic seq
   setGoals $ gl ++ (← getUnsolvedGoals) ++ gr
