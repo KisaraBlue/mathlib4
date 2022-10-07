@@ -1,6 +1,8 @@
 import Mathlib.Algebra.EllipticCurve.Kronecker
+import Mathlib.Algebra.EllipticCurve.LocalEC
 import Mathlib.Algebra.EllipticCurve.Model
 import Mathlib.Algebra.EllipticCurve.TateInt
+import Mathlib.Algebra.EllipticCurve.TateRing
 import Mathlib.Algebra.EllipticCurve.ValuedRing
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
@@ -26,11 +28,7 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
-<<<<<<< HEAD
 import Mathlib.Data.Nat.Enat
-import Mathlib.Data.Nat.Gcd
-=======
->>>>>>> 4f147b276fcc6f1d6c225aa93ecd22339c78478b
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod
@@ -42,15 +40,8 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
-<<<<<<< HEAD
 import Mathlib.Init.Data.Int.Lemmas
-import Mathlib.Init.Data.Int.Order
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Init.Data.List.Lemmas
-=======
 import Mathlib.Init.Data.Int.Notation
->>>>>>> 4f147b276fcc6f1d6c225aa93ecd22339c78478b
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
