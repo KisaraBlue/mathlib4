@@ -11,9 +11,7 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Algebra.Ring.Basic
-open Nat
-
-namespace Int
+open Nat Int
 
 instance : LinearOrder Int where
   le := (·≤·)
@@ -26,7 +24,3 @@ instance : LinearOrder Int where
   decidable_eq := by infer_instance
   decidable_le := by infer_instance
   decidable_lt := by infer_instance
-
-@[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
-
-@[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
