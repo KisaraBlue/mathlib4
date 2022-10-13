@@ -11,15 +11,22 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.PrintPrefix
 --class ValueMonoid (A : Type u) extends AddCommMonoid A, LinearOrder A
 
+open Enat
+
 section Obvious
 
-lemma match_non_zero (x : ℕ∪∞) {c1 c2 : β} : x ≠ 0 → (match x with | 0 => c1 | _ => c2) = c2 := by sorry
+lemma match_non_zero (x : ℕ∪∞) {c1 c2 : β} : x ≠ 0 → (match x with | 0 => c1 | _ => c2) = c2 := by
+  intro h
+  match x with
+  | ofN 0 => exact False.elim (h (Eq.refl 0))
+  | ∞ => simp
+  | ofN (n+1) => simp
 
-theorem nat_mul_left_cancel (a b c : Nat) : a ≠ 0 → a * b = a * c → b = c := by sorry
+theorem nat_mul_left_cancel (a b c : Nat) (h : a ≠ 0) : a * b = a * c → b = c := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
 
 end Obvious
 
-open Enat
+
 
 structure SurjVal {R : Type u} (p : R) [IntegralDomain R] where
   v : R → ℕ∪∞
@@ -56,10 +63,8 @@ lemma val_add_ge_of_ge {p : R} (nav : SurjVal p) {a b : R} (ha : nav.v a ≥ n) 
 
 
 
-def nat_of_val {p : R} (nav : SurjVal p) {a : R} (h : a ≠ 0) : ℕ :=
-  match nav.v a with
-  | ∞ => 0 --never used
-  | ofN n => n
+def nat_of_val {p : R} (nav : SurjVal p) {a : R} (h : a ≠ 0) : ℕ := to_nat ((not_iff_not.2 (nav.v_eq_top_iff_zero a)).2 h)
+
 
 lemma val_of_one {p : R} (nav : SurjVal p) : nav.v 1 = ofN 0 := by
   apply Enat.add_right_cancel_ofN 1
@@ -477,9 +482,14 @@ lemma int_val_mul_eq_add (p : ℕ) (prime : nat_prime p) (a b : ℤ) : int_val p
   simp [int_val, natAbs_mul]
   exact nat_val_mul_eq_add p prime (natAbs a) (natAbs b)
 
+lemma nat_val_add_ge_min (p a b : ℕ) : nat_valuation p (a + b) ≥ min (nat_valuation p a) (nat_valuation p b) := by sorry
+
+lemma natAbs_add (a b : ℤ) : natAbs (a + b) = max (natAbs a) (natAbs b) - min (natAbs a) (natAbs b) := by sorry
 
 lemma int_val_add_ge_min (p : ℕ) (a b : ℤ) : int_val p (a + b) ≥ min (int_val p a) (int_val p b) := by
-  sorry
+  simp [int_val, natAbs_add]
+  exact nat_val_add_ge_min p (natAbs a) (natAbs b)
+
 
 lemma int_val_add_eq_min (p : ℕ) (a b : ℤ) (h : int_val p a < int_val p b) : int_val p (a + b) = (int_val p a) := by sorry
 

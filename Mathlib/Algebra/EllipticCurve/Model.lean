@@ -61,7 +61,7 @@ def discr (e : Model R) : R :=
 
 lemma discr_identity (e : Model R) : 1728 * e.discr = e.c4 ^ 4 - e.c6 ^ 2 :=
 by
-  simp only [c4, c6]
+  simp only [c4, c6, discr]
   sorry
 
 def rst_iso (r s t : R) (e : Model R) : Model R := {
